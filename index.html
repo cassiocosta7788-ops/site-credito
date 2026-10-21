@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070d1b">
+  <meta name="description" content="Painel integrado de análise de sites, pagamentos e inteligência artificial.">
+  <title>Recuperador de Sites</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#inicio">
+      ◎ RECUPERADOR DE SITES
+      <small>SITES · PAGAMENTOS · NEURA AI</small>
+    </a>
+    <span class="system-status">● Sistema local</span>
+  </header>
+
+  <div class="layout">
+    <nav class="sidebar" aria-label="Menu principal">
+      <button class="navbtn active" data-page="inicio">▦ Painel principal</button>
+      <button class="navbtn" data-page="sites">◎ Recuperador de Sites</button>
+      <button class="navbtn" data-page="pagamentos">▣ Pagamentos</button>
+      <button class="navbtn" data-page="cartoes">▣ Cartão Completo</button>
+      <button class="navbtn" data-page="ia">✦ NEURA AI</button>
+      <button class="navbtn" data-page="relatorios">▤ Relatórios PDF</button>
+      <button class="navbtn" data-page="configuracoes">⚙ Configurações</button>
+    </nav>
+
+    <main>
+      <section id="inicio" class="page">
+        <h1>Painel principal</h1>
+        <p>Gerencie suas ferramentas em um só lugar.</p>
+
+        <div class="stats">
+          <article class="stat">
+            <span>Sites analisados</span>
+            <strong id="siteCount">0</strong>
+          </article>
+          <article class="stat">
+            <span>Registros de pagamento</span>
+            <strong id="paymentCount">0</strong>
+          </article>
+          <article class="stat">
+            <span>Total aprovado</span>
+            <strong id="approvedTotal">R$ 0,00</strong>
+          </article>
+          <article class="stat">
+            <span>Total pendente</span>
+            <strong id="pendingTotal">R$ 0,00</strong>
+          </article>
+        </div>
+
+        <article class="panel">
+          <h2>◎ Recuperador de Sites</h2>
+          <p>Analise conteúdo público de páginas acessíveis.</p>
+          <label for="quickUrl">Endereço do site</label>
+          <input id="quickUrl" type="url" placeholder="https://exemplo.com">
+          <button class="primary" id="openAnalyzer">Abrir analisador</button>
+        </article>
+
+        <article class="panel">
+          <h2>Ferramentas</h2>
+          <div class="actions">
+            <button class="secondary" data-goto="pagamentos">Pagamentos</button>
+            <button class="secondary" data-goto="cartoes">Cartão Completo</button>
+            <button class="secondary" data-goto="ia">NEURA AI</button>
+            <button class="secondary" data-goto="relatorios">Relatórios PDF</button>
+          </div>
+        </article>
+      </section>
+
+      <section id="sites" class="page hidden">
+        <h1>Recuperador de Sites</h1>
+        <article class="panel">
+          <p>Informe uma URL pública que você deseja analisar.</p>
+          <form id="siteForm">
+            <label for="siteUrl">URL do site</label>
+            <input id="siteUrl" type="url" required placeholder="https://exemplo.com">
+            <button class="primary" id="analyzeBtn">Analisar site</button>
+          </form>
+          <p id="siteStatus" class="status" aria-live="polite">Aguardando URL...</p>
+          <div id="siteResults"></div>
+          <button id="sitePrint" class="secondary hidden" type="button">Imprimir / salvar PDF</button>
+        </article>
+        <p class="notice">A leitura depende das permissões do site e das políticas do navegador. O aplicativo não contorna autenticação.</p>
+      </section>
+
+      <section id="pagamentos" class="page hidden">
+        <h1>Pagamentos</h1>
+        <p>Registros locais de demonstração. Ainda não processam transações reais.</p>
+        <div class="stats">
+          <article class="stat"><span>Aprovados</span><strong id="approvedCount">0</strong></article>
+          <article class="stat"><span>Pendentes</span><strong id="pendingCount">0</strong></article>
+        </div>
+        <article class="panel">
+          <h2>Novo registro</h2>
+          <form id="paymentForm">
+            <label for="description">Descrição</label>
+            <input id="description" required maxlength="120" placeholder="Pedido 001">
+            <label for="amount">Valor (R$)</label>
+            <input id="amount" type="number" min="0.01" step="0.01" required>
+            <label for="paymentStatus">Status</label>
+            <select id="paymentStatus">
+              <option>Aprovado</option>
+              <option>Pendente</option>
+              <option>Recusado</option>
+            </select>
+            <button class="primary">Adicionar registro</button>
+          </form>
+        </article>
+        <article class="panel" id="paymentReport">
+          <h2>Histórico</h2>
+          <div class="tablewrap">
+            <table>
+              <thead><tr><th>Descrição</th><th>Data</th><th>Status</th><th>Valor</th></tr></thead>
+              <tbody id="paymentRows"></tbody>
+            </table>
+          </div>
+          <div class="actions">
+            <button class="secondary" id="paymentPrint">Salvar PDF</button>
+            <button class="danger" id="clearPayments">Limpar histórico</button>
+          </div>
+        </article>
+      </section>
+
+      <section id="cartoes" class="page hidden">
+        <h1>Cartão Completo</h1>
+        <article class="panel">
+          <h2>Referências de pagamento</h2>
+          <p>Prepare este módulo para integrar um provedor autorizado de pagamentos.</p>
+          <div class="notice">Use referências fictícias ou tokens fornecidos pelo processador. Não armazene CVVs nem números completos de cartões reais.</div>
+        </article>
+      </section>
+
+      <section id="ia" class="page hidden">
+        <h1>NEURA AI</h1>
+        <article class="panel">
+          <p>Assistente de ideias, projetos e automações.</p>
+          <div id="chatHistory" class="chat" aria-live="polite">
+            <p><strong>NEURA:</strong> A interface está pronta. Conecte um modelo de IA através de um backend seguro para gerar respostas.</p>
+          </div>
+          <form id="chatForm">
+            <label for="chatMessage">Sua mensagem</label>
+            <textarea id="chatMessage" rows="3" required placeholder="Escreva sua mensagem..."></textarea>
+            <button class="primary">Enviar mensagem</button>
+          </form>
+        </article>
+      </section>
+
+      <section id="relatorios" class="page hidden">
+        <h1>Relatórios PDF</h1>
+        <article class="panel">
+          <p>Exporte o histórico de pagamentos usando a impressão do navegador.</p>
+          <button class="primary" id="generalPrint">Imprimir resumo</button>
+          <button class="secondary" id="reportPaymentPrint">Imprimir pagamentos</button>
+        </article>
+      </section>
+
+      <section id="configuracoes" class="page hidden">
+        <h1>Configurações</h1>
+        <article class="panel">
+          <h2>Estado do sistema</h2>
+          <p>Interface: local.</p>
+          <p>Persistência: armazenamento do navegador.</p>
+          <p>Gateway de pagamentos: ainda não conectado.</p>
+          <p>NEURA AI: aguardando integração.</p>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <footer>Recuperador de Sites · Projeto em desenvolvimento</footer>
+</body>
+</html>
