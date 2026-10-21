@@ -207,6 +207,111 @@ $("siteForm").addEventListener("submit", async event => {
       url.username ||
       url.password
     ) {
+      throw new Error("Informe uma URL HTTP ou HTTPS válida.");
+    }
+  } catch {
+    status.textContent = "Informe uma URL válida.";
+    return;
+  }
+
+  button.disabled = true;
+  status.textContent = "Consultando o backend...";
+
+  try {
+    const response = await fetch("/api/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: url.href })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || `Erro HTTP ${response.status}`);
+    }
+
+    const doc = new DOMParser().parseFromString(
+      data.html,
+      "text/html"
+    );
+
+    const heading = document.createElement("h3");
+    heading.textContent = doc.title || url.hostname;
+
+    const paragraph = document.createElement("p");
+    paragraph.textContent = "Endereço analisado: " + data.url;
+
+    const content = document.createElement("pre");
+    content.textContent = (
+      doc.body?.innerText ||
+      doc.body?.textContent ||
+      ""
+    ).slice(0, 20000);
+
+    const linksHeading = document.createElement("h3");
+    linksHeading.textContent = "Links encontrados";
+
+    const list = document.createElement("ul");
+    const uniqueLinks = new Set();
+
+    doc.querySelectorAll("a[href]").forEach(anchor => {
+      try {
+        const found = new URL(anchor.getAttribute("href"), data.url);
+
+        if (["http:", "https:"].includes(found.protocol)) {
+          uniqueLinks.add(found.href);
+        }
+      } catch {
+        // Ignora links inválidos.
+      }
+    });
+
+    [...uniqueLinks].slice(0, 100).forEach(href => {
+      const item = document.createElement("li");
+      const link = document.createElement("a");
+
+      link.href = href;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = href;
+
+      item.appendChild(link);
+      list.appendChild(item);
+    });
+
+    results.append(heading, paragraph, content, linksHeading, list);
+
+    status.textContent = "Análise concluída.";
+    $("sitePrint").classList.remove("hidden");
+
+    siteCount++;
+    $("siteCount").textContent = siteCount;
+  } catch (error) {
+    status.textContent =
+      "Não foi possível concluir a análise.\n" + error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
+  event.preventDefault();
+
+  const status = $("siteStatus");
+  const results = $("siteResults");
+  const button = $("analyzeBtn");
+
+  results.replaceChildren();
+  $("sitePrint").classList.add("hidden");
+
+  let url;
+
+  try {
+    url = new URL($("siteUrl").value.trim());
+
+    if (
+      !["http:", "https:"].includes(url.protocol) ||
+      url.username ||
+      url.password
+    ) {
       throw new Error("URL inválida ou não permitida.");
     }
   } catch {
